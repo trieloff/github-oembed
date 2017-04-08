@@ -1,22 +1,35 @@
 var request = require('request-promise');
 
-function main(params) {
-  return   {
-    "width": 425,
-    "author_name": "schmoyoho",
-    "author_url": "http://www.youtube.com/user/schmoyoho",
-    "version": "1.0",
-    "provider_url": "http://www.github.com/",
-    "provider_name": "GitHub",
-    "thumbnail_width": 480,
-    "thumbnail_url": "http://i3.ytimg.com/vi/bDOYN-6gdRE/hqdefault.jpg",
-    "height": 344,
-    "thumbnail_height": 360,
-    "html": "<iframe type='text/html' width='425' height='344' src='http://www.youtube.com/embed/bDOYN-6gdRE' frameborder=0></iframe>",
-    "url": "http://www.youtube.com/watch?v=bDOYN-6gdRE",
-    "type": "rich",
-    "title": "Auto-Tune the News #8: dragons. geese. Michael Vick. (ft. T-Pain)"
+function parseUrl(url) {
+  var fragments = url.split("/");
+  
+  var providers = {
+    "github.com": "GitHub",
+    "gist.github.com": "GitHubGist"
   };
+  
+  var urls = {
+    "github.com": "https://github.com",
+    "gist.github.com": "https://gist.github.com"
+  }
+  
+  return {
+    'url': url,
+    'provider': providers[fragments[2]],
+    'provider_url': urls[fragments[2]],
+    'type': 'rich',
+    'version': '1.0'
+  }; 
 }
 
-main({'url':'https://gist.github.com/trieloff/013509c40db9860746fe3977acadb676'})
+function main(params) {
+  var url = params.url;
+  if (!parseUrl(url).provider) {
+    return {'version':'1.0', 'error': 'no matching provider found', 'url':url}
+  }
+  return parseUrl(url);
+}
+
+console.log(main({'url':'https://gist.github.com/trieloff/013509c40db9860746fe3977acadb676'}));
+console.log(main({'url':'https://github.com/Microsoft/reactxp/blob/release_0.34.1/README.md'}));
+console.log(main({'url':'http://www.youtube.com'}));
