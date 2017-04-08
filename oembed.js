@@ -32,12 +32,26 @@ function shiftN(arr, n) {
 function parseGitHub(url) {
   url["repo"] = url.url.split("/")[4];
   url["ref"] = url.url.split("/")[6];
-  url["path"] = shiftN(url.url.split("/"),7).join("/");
+  url["path"] = shiftN(url.url.split("/"), 7).join("/");
   return url;
 }
 
 function parseGist(url) {
+  url["id"] = shiftN(url.url.split("/"), 4).pop();
   return url;
+}
+
+function getGistInfo(url) {
+  return request({
+      "method": "GET",
+      "uri": ["http://api.github.com","gists", url.id].join("/"),
+      "headers": {"User-Agent": "OEmbed Parser"},
+      "json": true
+    }).then(function(body) {
+      return {
+        "filename": body.files
+      };
+    });
 }
 
 function enrichUrl(url) {
@@ -50,8 +64,9 @@ function enrichUrl(url) {
   
   if (url.provider == "GitHub") {
     url = parseGitHub(url);
-  } else if (url.provider == "GitHubGists") {
+  } else if (url.provider == "GitHubGist") {
     url = parseGist(url);
+    return getGistInfo(url);
   }
   
   return url;
@@ -65,7 +80,9 @@ function main(params) {
   return enrichUrl(parseUrl(url));
 }
 
-console.log(main({'url':'https://gist.github.com/trieloff/013509c40db9860746fe3977acadb676'}));
+main({'url':'https://gist.github.com/trieloff/013509c40db9860746fe3977acadb676'}).then(function(result) {
+  console.log(result);
+});
 console.log(main({'url':'https://github.com/Microsoft/reactxp/blob/release_0.34.1/README.md'}));
 console.log(main({'url':'https://github.com/Microsoft/reactxp/blob/master/samples/README.md'}));
 console.log(main({'url':'http://www.youtube.com'}));
