@@ -22,14 +22,50 @@ function parseUrl(url) {
   }; 
 }
 
+function shiftN(arr, n) {
+  for (i=0;i<n;i++) {
+    arr.shift();
+  }
+  return arr;
+}
+
+function parseGitHub(url) {
+  url["repo"] = url.url.split("/")[4];
+  url["ref"] = url.url.split("/")[6];
+  url["path"] = shiftN(url.url.split("/"),7).join("/");
+  return url;
+}
+
+function parseGist(url) {
+  return url;
+}
+
+function enrichUrl(url) {
+  url["author_name"] = url.url.split("/")[3];
+  
+  var urls = {
+    "github.com": "https://github.com/" + url.url.split("/")[3],
+    "gist.github.com": "https://gist.github.com" + url.url.split("/")[3]
+  }
+  
+  if (url.provider == "GitHub") {
+    url = parseGitHub(url);
+  } else if (url.provider == "GitHubGists") {
+    url = parseGist(url);
+  }
+  
+  return url;
+}
+
 function main(params) {
   var url = params.url;
   if (!parseUrl(url).provider) {
     return {'version':'1.0', 'error': 'no matching provider found', 'url':url}
   }
-  return parseUrl(url);
+  return enrichUrl(parseUrl(url));
 }
 
 console.log(main({'url':'https://gist.github.com/trieloff/013509c40db9860746fe3977acadb676'}));
 console.log(main({'url':'https://github.com/Microsoft/reactxp/blob/release_0.34.1/README.md'}));
+console.log(main({'url':'https://github.com/Microsoft/reactxp/blob/master/samples/README.md'}));
 console.log(main({'url':'http://www.youtube.com'}));
