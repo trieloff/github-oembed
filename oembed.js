@@ -41,6 +41,36 @@ function parseGist(url) {
   return url;
 }
 
+function countLines(code) {
+  return code.split("\n").length;
+}
+
+function countColumns(code) {
+  return Math.max.apply(null, code.split("\n").map(function(e) {return e.length}));
+}
+
+function makeHtml(code, language) {
+  html = "<pre>";
+  if (language) {
+    html += '<code language="' + language + '">';
+  } else {
+    html += '<code>'
+  }
+  html += code;
+  html += "</code></pre>";
+  return html;
+}
+
+function makeHtmlFooter(filename, author, author_url, url, provider) {
+  html = "View ";
+  html += '<a href="' + url + '">' + filename + '</a>';
+  html += ' by ';
+  html += '<a href="' + author_url + '">' + author + '</a>';
+  html += ' on ';
+  html += '<a href="' + url + '">' + provider + '</a>';
+  return html;
+}
+
 function getGistInfo(url) {
   return request({
       "method": "GET",
@@ -49,7 +79,24 @@ function getGistInfo(url) {
       "json": true
     }).then(function(body) {
       return {
-        "filename": body.files
+        "height": countLines(body.files[Object.keys(body.files)[0]].content) * 15,
+        "width": countColumns(body.files[Object.keys(body.files)[0]].content) * 10,
+        "html": makeHtml(body.files[Object.keys(body.files)[0]].content) + 
+          makeHtmlFooter(body.files[Object.keys(body.files)[0]].filename,
+          url.author_name,
+          body.owner.html_url,
+          url.url,
+          url.provider
+        ),
+        "type": url.type,
+        "provider": url.provider,
+        "provider_url": url.provider_url,
+        "version": url.version,
+        "author_name": url.author_name,
+        "author_url": body.owner.html_url,
+        "thumbnail_url": body.owner.avatar_url,
+        "thumbnail_height": 460,
+        "thumbnail_width": 460
       };
     });
 }
