@@ -101,6 +101,40 @@ function getGistInfo(url) {
     });
 }
 
+function getGitHubInfo(url) {
+  return request({
+    "method": "GET",
+    "uri": ["http://api.github.com", "repos", url.author_name, url.repo, "contents", url.path].join("/"),
+    "headers": {"User-Agent": "OEmbed Parser"},
+    "json": true,
+    "qs": {"ref": url.ref}
+  }).then(function(body) {
+    return request({
+      "method": "GET",
+      "uri": body.download_url,
+      "headers": {"User-Agent": "OEmbed Parser"}
+    }).then(function(raw){
+      return {
+        "height": countLines(raw) * 15,
+        "width": countColumns(raw) * 10,
+        "html": makeHtml(raw) + 
+          makeHtmlFooter(body.name,
+          url.author_name,
+          url.author_url,
+          url.url,
+          url.provider
+        ),
+        "type": url.type,
+        "provider": url.provider,
+        "provider_url": url.provider_url,
+        "version": url.version,
+        "author_name": url.author_name,
+        "author_url": url.author_url
+      };
+    });
+  });
+}
+
 function enrichUrl(url) {
   url["author_name"] = url.url.split("/")[3];
   
@@ -111,6 +145,7 @@ function enrichUrl(url) {
   
   if (url.provider == "GitHub") {
     url = parseGitHub(url);
+    return getGitHubInfo(url);
   } else if (url.provider == "GitHubGist") {
     url = parseGist(url);
     return getGistInfo(url);
@@ -130,6 +165,25 @@ function main(params) {
 main({'url':'https://gist.github.com/trieloff/013509c40db9860746fe3977acadb676'}).then(function(result) {
   console.log(result);
 });
-console.log(main({'url':'https://github.com/Microsoft/reactxp/blob/release_0.34.1/README.md'}));
-console.log(main({'url':'https://github.com/Microsoft/reactxp/blob/master/samples/README.md'}));
+
+
+main({'url':'https://github.com/Microsoft/reactxp/blob/release_0.34.1/README.md'}).then(function(result) {
+  console.log(result);
+});
+
+
+/*
+
+main({'url':'https://github.com/Microsoft/reactxp/blob/release_0.34.1/README.md'}).then(function(result) {
+  console.log(result);
+});
+
+main({'url':'https://github.com/Microsoft/reactxp/blob/release_0.34.1/README.md'}).then(function(result) {
+  console.log(result);
+});
+
+*/
+
+
+
 console.log(main({'url':'http://www.youtube.com'}));
