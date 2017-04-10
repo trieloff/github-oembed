@@ -157,7 +157,7 @@ function enrichUrl(url) {
 function main(params) {
   var url = params.url;
   if (!url) {
-    return {"error":"Missing URL parameter 'url' of the page to embed."};
+    return {"error":"Missing URL parameter 'url' of the page to embed.", "version":"1.0"};
   }
   if (!parseUrl(url).provider) {
     return {'version':'1.0', 'error': 'no matching provider found', 'url':url}
