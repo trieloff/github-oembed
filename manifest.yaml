@@ -3,7 +3,7 @@ package:
   version: 1.0
   license: Apache-2.0
   actions:
-    handle-webhook:
+    embed:
       version: 1.0
       location: oembed.js
       runtime: nodejs@6
