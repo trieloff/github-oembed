@@ -1,5 +1,6 @@
 var request = require('request-promise');
 
+
 function parseUrl(url) {
   var fragments = url.split("/");
   
@@ -150,7 +151,7 @@ function enrichUrl(url) {
     url = parseGist(url);
     return getGistInfo(url);
   }
-  
+
   return url;
 }
 
