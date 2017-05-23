@@ -166,28 +166,4 @@ function main(params) {
   return enrichUrl(parseUrl(url));
 }
 
-main({'url':'https://gist.github.com/trieloff/013509c40db9860746fe3977acadb676'}).then(function(result) {
-  console.log(result);
-});
-
-
-main({'url':'https://github.com/Microsoft/reactxp/blob/release_0.34.1/README.md'}).then(function(result) {
-  console.log(result);
-});
-
-
-/*
-
-main({'url':'https://github.com/Microsoft/reactxp/blob/release_0.34.1/README.md'}).then(function(result) {
-  console.log(result);
-});
-
-main({'url':'https://github.com/Microsoft/reactxp/blob/release_0.34.1/README.md'}).then(function(result) {
-  console.log(result);
-});
-
-*/
-
-
-
-//console.log(main({'url':'http://www.youtube.com'}));
+exports.main = main;
