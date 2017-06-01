@@ -75,7 +75,7 @@ function makeHtmlFooter(filename, author, author_url, url, provider) {
 function getGistInfo(url) {
   return request({
       "method": "GET",
-      "uri": ["http://api.github.com","gists", url.id].join("/"),
+      "uri": ["https://api.github.com","gists", url.id].join("/"),
       "headers": {"User-Agent": "OEmbed Parser"},
       "json": true
     }).then(function(body) {
@@ -105,7 +105,7 @@ function getGistInfo(url) {
 function getGitHubInfo(url) {
   return request({
     "method": "GET",
-    "uri": ["http://api.github.com", "repos", url.author_name, url.repo, "contents", url.path].join("/"),
+    "uri": ["https://api.github.com", "repos", url.author_name, url.repo, "contents", url.path].join("/"),
     "headers": {"User-Agent": "OEmbed Parser"},
     "json": true,
     "qs": {"ref": url.ref}
