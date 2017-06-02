@@ -121,7 +121,7 @@ function getGitHubInfo(url) {
         "html": makeHtml(raw) + 
           makeHtmlFooter(body.name,
           url.author_name,
-          url.author_url,
+          "https://www.github.com/" + url.author_name,
           url.url,
           url.provider
         ),
